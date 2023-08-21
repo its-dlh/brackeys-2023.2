@@ -20,8 +20,9 @@ __meta__ = {
 }
 
 [node name="ColorRect" type="ColorRect" parent="Area2D"]
+margin_top = -1.34454
 margin_right = 40.0
-margin_bottom = 40.0
+margin_bottom = 38.6555
 color = Color( 0.0941176, 0.827451, 1, 0.156863 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
