@@ -1,0 +1,77 @@
+[gd_scene load_steps=3 format=2]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 20, 20 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 33.3566, 33.7604 )
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2( 0, 128 )
+scale = Vector2( 34.68, 23.8 )
+space_override = 1
+gravity_vec = Vector2( 0, -1 )
+gravity = 284.676
+linear_damp = 0.969
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="ColorRect" type="ColorRect" parent="Area2D"]
+margin_right = 40.0
+margin_bottom = 40.0
+color = Color( 0.0941176, 0.827451, 1, 0.156863 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 20, 20 )
+shape = SubResource( 1 )
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+position = Vector2( 96, 16 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+position = Vector2( 20.0084, 20.1506 )
+scale = Vector2( 0.59933, 0.587948 )
+shape = SubResource( 2 )
+
+[node name="ColorRect" type="ColorRect" parent="RigidBody2D"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="RigidBody2D2" type="RigidBody2D" parent="."]
+position = Vector2( 432, 520 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D2"]
+position = Vector2( 20.0084, 20.1506 )
+scale = Vector2( 0.59933, 0.587948 )
+shape = SubResource( 2 )
+
+[node name="ColorRect" type="ColorRect" parent="RigidBody2D2"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="RigidBody2D3" type="RigidBody2D" parent="."]
+position = Vector2( 376, 176 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D3"]
+position = Vector2( 20.0084, 20.1506 )
+scale = Vector2( 0.59933, 0.587948 )
+shape = SubResource( 2 )
+
+[node name="ColorRect" type="ColorRect" parent="RigidBody2D3"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="RigidBody2D4" type="RigidBody2D" parent="."]
+position = Vector2( 192, 528 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D4"]
+position = Vector2( 20.0084, 20.1506 )
+scale = Vector2( 0.59933, 0.587948 )
+shape = SubResource( 2 )
+
+[node name="ColorRect" type="ColorRect" parent="RigidBody2D4"]
+margin_right = 40.0
+margin_bottom = 40.0
