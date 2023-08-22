@@ -10,3 +10,8 @@ func look_follow(state, current_position, target_position):
 
 func _integrate_forces(state):
 	look_follow(state, global_position, get_global_mouse_position())
+
+func _input(event):
+	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
+		var impulse_vector = Vector2(100, 0).rotated(rotation)
+		apply_impulse(Vector2(), impulse_vector)
