@@ -7,6 +7,7 @@ onready var rigid_body = $RigidBody
 onready var anchor = $Anchor
 
 var hook_state = HookStates.idle
+var is_pinned = false
 
 enum HookStates {
 	idle,
@@ -19,12 +20,13 @@ func _ready():
 	pass
 
 func _physics_process(delta):
-	if anchor.position.distance_to(rigid_body.position) > max_throw_distance:
+	if anchor.position.distance_to(rigid_body.position) > max_throw_distance and not is_pinned:
+		is_pinned = true
 		var pin = PinJoint2D.new()
 		pin.position = rigid_body.position
 		pin.node_a = rigid_body.get_path()
 		pin.node_b = anchor.get_path()
-		
+
 		add_child(pin)
 
 func _input(event):
@@ -42,5 +44,5 @@ func _on_Anchor_body_entered(body):
 	chain.rotation = rad2deg(rigid_body.position.angle_to(body.position))
 	chain.node_a = rigid_body.get_path()
 	chain.node_b = body.get_path()
-	
+
 	add_child(chain)
