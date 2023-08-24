@@ -6,6 +6,9 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 100000, 100000 )
 
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 20, 20 )
+
 [node name="Node2D" type="Node2D"]
 
 [node name="Area2D" type="Area2D" parent="."]
@@ -37,3 +40,24 @@ limit_top = -20
 smoothing_enabled = true
 
 [node name="TorquePlayer" parent="." instance=ExtResource( 2 )]
+[node name="Target" type="RigidBody2D" parent="."]
+position = Vector2( 425, 360 )
+gravity_scale = 0.0
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Target"]
+position = Vector2( 20, 20 )
+shape = SubResource( 2 )
+
+[node name="ColorRect" type="ColorRect" parent="Target/CollisionShape2D"]
+anchor_left = -20.0
+anchor_top = -20.0
+anchor_right = 20.0
+anchor_bottom = 20.0
+margin_left = -20.0
+margin_top = -20.0
+margin_right = 20.0
+margin_bottom = 20.0
+color = Color( 1, 0, 0, 1 )
