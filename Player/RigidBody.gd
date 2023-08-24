@@ -20,11 +20,6 @@ func look_follow(current_position, target_position):
 func _physics_process(_delta):
 	look_follow(global_position, get_global_mouse_position())
 
-func _input(event):
-	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
-		var impulse_vector = Vector2(100, 0).rotated(rotation)
-		apply_impulse(Vector2(), impulse_vector)
-
 func attempt_angular_velocity(target_velocity: float):
 	var target_acceleration = (target_velocity - angular_velocity) / target_accel_time
 	var target_torque = inertia * target_acceleration
