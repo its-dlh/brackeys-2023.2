@@ -43,6 +43,8 @@ smoothing_enabled = true
 [node name="Target" type="RigidBody2D" parent="."]
 position = Vector2( 425, 360 )
 gravity_scale = 0.0
+[node name="Target" type="StaticBody2D" parent="."]
+position = Vector2( 590, 130 )
 __meta__ = {
 "_edit_group_": true
 }

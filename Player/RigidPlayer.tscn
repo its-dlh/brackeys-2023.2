@@ -44,4 +44,6 @@ pause_mode = 1
 node_a = NodePath("../RigidPlayer")
 node_b = NodePath("../Anchor")
 length = 70.0
-rest_length = 20.0
+rest_length = 10.0
+
+[connection signal="body_entered" from="Anchor" to="." method="_on_Anchor_body_entered"]

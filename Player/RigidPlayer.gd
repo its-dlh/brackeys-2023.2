@@ -11,17 +11,22 @@ enum HookStates {
 	stuck
 }
 
-func look_follow(state, current_position, target_position):
-	var target_angle: int = rad2deg( atan2(target_position.y - current_position.y, target_position.x - current_position.x) )
-	var current_angle: int = rotation_degrees
-	var difference = (target_angle - current_angle + 180) % 360 - 180
+func _ready():
+	chain.pause_mode = Node.PAUSE_MODE_STOP
 
-	state.set_angular_velocity(difference * 1)
-
-func _integrate_forces(state):
-	look_follow(state, global_position, get_global_mouse_position())
+func _physics_process(delta):
+	# hook.look_at(get_global_mouse_position())
+	pass
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
 		var impulse_vector = Vector2(500, 0).rotated(rotation)
 		hook.apply_impulse(Vector2(), impulse_vector)
+		print("click")
+
+
+func _on_Anchor_body_entered(body):
+	print(body)
+	print("body entered")
+	# process the collision
+	chain.pause_mode = Node.PAUSE_MODE_PROCESS
