@@ -11,6 +11,12 @@ enum HookStates {
 	stuck
 }
 
+enum HookStates {
+	idle,
+	extended,
+	stuck
+}
+
 func _ready():
 	chain.pause_mode = Node.PAUSE_MODE_STOP
 
