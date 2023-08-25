@@ -1,7 +1,6 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Player/Player.gd" type="Script" id=1]
-[ext_resource path="res://Player/RigidBody.gd" type="Script" id=2]
 [ext_resource path="res://Player/Player.png" type="Texture" id=3]
 
 [sub_resource type="CircleShape2D" id=1]
@@ -9,26 +8,19 @@ radius = 24.0
 
 [sub_resource type="RectangleShape2D" id=2]
 
-[node name="Player" type="Node2D"]
+[node name="Player" type="RigidBody2D"]
+contacts_reported = 1
+contact_monitor = true
+angular_damp = 10.5
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true
 }
 
-[node name="RigidBody" type="RigidBody2D" parent="."]
-angular_damp = 10.5
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
-__meta__ = {
-"_edit_group_": true
-}
 
-[node name="Sprite" type="Sprite" parent="RigidBody"]
+[node name="Sprite" type="Sprite" parent="."]
 rotation = -1.57079
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 3 )
@@ -39,9 +31,6 @@ collision_layer = 2
 collision_mask = 2
 contacts_reported = 1
 contact_monitor = true
-__meta__ = {
-"_edit_group_": true
-}
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Anchor"]
 position = Vector2( 0, 30 )
