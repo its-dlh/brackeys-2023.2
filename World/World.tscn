@@ -33,9 +33,10 @@ __meta__ = {
 margin_left = -4096.0
 margin_right = 100000.0
 margin_bottom = 100000.0
-color = Color( 0.0941176, 0.827451, 1, 0.156863 )
+color = Color( 0, 0.247059, 1, 0.215686 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+visible = false
 position = Vector2( 0, 100040 )
 shape = SubResource( 1 )
 
