@@ -1,7 +1,7 @@
 extends RigidBody2D
 
 enum PlayerStates {DEFAULT, HOOKED}
-enum HookStates {NONE, EXTEND, RETRACT_TO_PLAYER}
+enum HookStates {NONE, EXTEND, HOOKED, RETRACT_TO_PLAYER}
 
 export var throw_speed = 0.5
 export var target_movement_time = 0.2
@@ -16,6 +16,7 @@ const HOOK_MAX_LENGTH = 250.0
 const HOOK_SPEED = 800.0
 const PLAYER_HOOK_SPEED = 600.0
 
+var anchor_sticky_position: Vector2
 var hook_direction: Vector2
 var player_state = PlayerStates.DEFAULT
 var hook_state = HookStates.NONE
@@ -32,37 +33,64 @@ func _physics_process(delta):
 				player_state = PlayerStates.DEFAULT
 				hide_hook()
 		else:
-			if hook_state == HookStates.RETRACT_TO_PLAYER:
+			if hook_state == HookStates.RETRACT_TO_PLAYER or hook_state == HookStates.HOOKED:
 				var direction = hook.global_position.direction_to(anchor_point.global_position)
 				hook.move_and_collide(direction * HOOK_SPEED * delta)
+				# We don't like the collision event as it returns (since the anchor
+				# can knock around the Sub and cause a fun (but BAD) launch effect,
+				# so instead we just process the distance and give ourselves a little
+				# wiggle room with the constant
 				if hook.global_position.distance_to(anchor_point.global_position) <= 1:
-					hook_state = HookStates.NONE
-					player_state = PlayerStates.DEFAULT
-					hide_hook()
+					hook_return()
 
 	match hook_state:
 		HookStates.EXTEND:
-			var collision_info = hook.move_and_collide(hook_direction * HOOK_SPEED * delta)
-			if collision_info:
-				hook_collide()
-			if hook.global_position.distance_to(global_position) >= HOOK_MAX_LENGTH:
+			if hook.global_position.distance_to(anchor_point.global_position) >= HOOK_MAX_LENGTH:
+				# Too far!
 				hook_state = HookStates.RETRACT_TO_PLAYER
-				hook_shape.call_deferred("set_disabled", true)
+			else:
+				var collision_info = hook.move_and_collide(hook_direction * HOOK_SPEED * delta)
+				if collision_info:
+					hooked()
+		HookStates.HOOKED:
+			hook.global_position = anchor_sticky_position
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
 		if hook_state == HookStates.NONE:
-			hook.global_position = anchor_point.global_position # center it
-			hook_state = HookStates.EXTEND
-			hook_direction = Vector2(throw_speed, 0).rotated(rotation)
-			hook.show()
-			hook_shape.disabled = false
+			hook_launch()
 
-func hook_collide():
+# When the user initially clicks the hook is launched
+# Requires checking hook status before firing
+func hook_launch():
+	hook.global_position = anchor_point.global_position # center it
+	hook_state = HookStates.EXTEND
+	hook_direction = Vector2(throw_speed, 0).rotated(rotation)
+	hook.show()
+	hook_shape.disabled = false
+
+# When the hook hits a target 
+func hooked():
+	# We pause the movement of the anchor by collecting it's
+	# position when it hits. In our physics processing, we reset
+	# its position to the saved position
+	
+	# This is better than doing any kind of pause/disable since
+	# we still want the anchor to process events
+	anchor_sticky_position = hook.global_position
 	player_state = PlayerStates.HOOKED
-	# apply_impulse(Vector2.ZERO, global_position.direction_to(hook.global_position) * PLAYER_HOOK_SPEED)
-	hook_state = HookStates.NONE
+	hook_state = HookStates.HOOKED
+	
+	# We do want to keep from registering a second collision, however
 	hook_shape.call_deferred("set_disabled", true)
+
+# Hook returns to ship
+func hook_return():
+	print("hook return to ship")
+	hook_state = HookStates.NONE
+	player_state = PlayerStates.DEFAULT
+	hook_shape.call_deferred("set_disabled", true)
+	
 
 func look_follow(current_position, target_position):
 	var target_angle = atan2(target_position.y - current_position.y, target_position.x - current_position.x)
