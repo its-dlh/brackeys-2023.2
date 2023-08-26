@@ -1,6 +1,6 @@
 extends Node2D
 
-export var max_throw_distance = 100
+export var max_throw_distance = 150
 # export var throw_speed = 400
 # export var anchor_slack = 10
 
@@ -62,6 +62,10 @@ func _input(event):
 				remove_child(anchor_pin)
 				anchor_pin.queue_free()
 				remove_child(pin_anchor)
+
+				# var impulse_vector = rigid_body.global_position - pin_anchor.global_position
+				var impulse_vector = Vector2(200, 0).rotated(rigid_body.global_rotation)
+				rigid_body.apply_impulse(Vector2(), impulse_vector)
 
 			hook_state = HookStates.idle
 			print("idle")
