@@ -23,7 +23,7 @@ smoothing_enabled = true
 [node name="Area2D" type="Area2D" parent="."]
 position = Vector2( 0, 128 )
 space_override = 1
-gravity_vec = Vector2( 0, -1 )
+gravity_vec = Vector2( -0.01, -1 )
 gravity = 284.676
 linear_damp = 0.969
 __meta__ = {

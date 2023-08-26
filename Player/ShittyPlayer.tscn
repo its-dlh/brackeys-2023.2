@@ -32,6 +32,12 @@ rotation = -1.57079
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 3 )
 
+[node name="Camera2D" type="Camera2D" parent="RigidBody"]
+current = true
+limit_smoothed = true
+smoothing_enabled = true
+smoothing_speed = 1.0
+
 [node name="AnchorLine" type="Line2D" parent="."]
 visible = false
 width = 4.0
