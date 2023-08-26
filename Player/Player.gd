@@ -117,8 +117,6 @@ func hide_hook():
 	hook_shape.call_deferred("set_disabled", true)
 
 func _on_Water_body_entered(_body):
-	print('splash down')
-	print(linear_velocity)
 	if linear_velocity.y > 30:
 		var vol_offset = clamp(120 - linear_velocity.y, 0, 100) / 100
 		splash_down_audio.volume_db = vol_offset * -20
@@ -126,8 +124,6 @@ func _on_Water_body_entered(_body):
 
 
 func _on_Water_body_exited(_body):
-	print('splash up')
-	print(linear_velocity)
 	if linear_velocity.y < -30:
 		var vol_offset = clamp(-120 - linear_velocity.y, -100, 0) / 100
 		splash_up_audio.volume_db = vol_offset * 20
