@@ -110,8 +110,6 @@ shape = SubResource( 4 )
 position = Vector2( 961, 1347 )
 rotation = -0.632212
 scale = Vector2( 1, 1 )
-
-[node name="Area2D" parent="JetStreams/IntroStream" index="1"]
 gravity_vec = Vector2( -0.5, -0.5 )
 
 [node name="TripletsStream1" parent="JetStreams" instance=ExtResource( 4 )]
@@ -128,15 +126,7 @@ scale = Vector2( 1, 1 )
 position = Vector2( 2261, 1095 )
 rotation = -1.50265
 scale = Vector2( 1, 1 )
-
-[node name="Area2D" parent="JetStreams/CrescentTop" index="1"]
 gravity_vec = Vector2( -1, 0 )
-
-[node name="CollisionShape2D" parent="JetStreams/CrescentTop/Area2D" index="0"]
-position = Vector2( 20.2647, -99.6108 )
 
 [node name="SquareStream" parent="JetStreams" instance=ExtResource( 4 )]
 position = Vector2( 3332, 3933 )
-
-[editable path="JetStreams/IntroStream"]
-[editable path="JetStreams/CrescentTop"]
