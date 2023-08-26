@@ -24,7 +24,7 @@ scale_amount = 4.0
 [node name="Area2D" type="Area2D" parent="."]
 space_override = 1
 gravity_vec = Vector2( 0, -1 )
-gravity = 200.0
+gravity = 1000.0
 linear_damp = 0.0
 angular_damp = 0.0
 
