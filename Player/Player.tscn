@@ -12,6 +12,7 @@ radius = 24.0
 
 [sub_resource type="AudioStreamRandomPitch" id=3]
 audio_stream = ExtResource( 4 )
+random_pitch = 1.2
 
 [sub_resource type="AudioStreamRandomPitch" id=4]
 audio_stream = ExtResource( 2 )
@@ -53,7 +54,7 @@ color = Color( 0, 0, 0, 1 )
 
 [node name="SplashDownAudio" type="AudioStreamPlayer" parent="."]
 stream = SubResource( 3 )
-pitch_scale = 0.92
+pitch_scale = 0.72
 
 [node name="SplashUpAudio" type="AudioStreamPlayer" parent="."]
 stream = SubResource( 4 )

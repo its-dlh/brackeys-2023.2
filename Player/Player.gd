@@ -27,7 +27,7 @@ var hook_state = HookStates.NONE
 func _physics_process(delta):
 	look_follow(global_position, get_global_mouse_position())
 
-	if Input.is_action_pressed("left_click"): 
+	if Input.is_action_pressed("left_click"):
 		if player_state == PlayerStates.HOOKED:
 			var direction = global_position.direction_to(hook.global_position)
 			apply_impulse(Vector2.ZERO, global_position.direction_to(hook.global_position) * PLAYER_HOOK_SPEED * delta)
@@ -72,18 +72,18 @@ func hook_launch():
 	hook.show()
 	hook_shape.disabled = false
 
-# When the hook hits a target 
+# When the hook hits a target
 func hooked():
 	# We pause the movement of the anchor by collecting it's
 	# position when it hits. In our physics processing, we reset
 	# its position to the saved position
-	
+
 	# This is better than doing any kind of pause/disable since
 	# we still want the anchor to process events
 	anchor_sticky_position = hook.global_position
 	player_state = PlayerStates.HOOKED
 	hook_state = HookStates.HOOKED
-	
+
 	# We do want to keep from registering a second collision, however
 	hook_shape.call_deferred("set_disabled", true)
 
@@ -93,7 +93,7 @@ func hook_return():
 	hook_state = HookStates.NONE
 	player_state = PlayerStates.DEFAULT
 	hook_shape.call_deferred("set_disabled", true)
-	
+
 
 func look_follow(current_position, target_position):
 	var target_angle = atan2(target_position.y - current_position.y, target_position.x - current_position.x)
@@ -116,15 +116,19 @@ func hide_hook():
 	hook.hide()
 	hook_shape.call_deferred("set_disabled", true)
 
-func _on_Water_body_entered(body):
+func _on_Water_body_entered(_body):
 	print('splash down')
 	print(linear_velocity)
-	if linear_velocity.y > 80:
+	if linear_velocity.y > 30:
+		var vol_offset = clamp(120 - linear_velocity.y, 0, 100) / 100
+		splash_down_audio.volume_db = vol_offset * -20
 		splash_down_audio.play()
 
 
-func _on_Water_body_exited(body):
+func _on_Water_body_exited(_body):
 	print('splash up')
 	print(linear_velocity)
-	if linear_velocity.y < -90:
+	if linear_velocity.y < -30:
+		var vol_offset = clamp(-120 - linear_velocity.y, -100, 0) / 100
+		splash_up_audio.volume_db = vol_offset * 20
 		splash_up_audio.play()
