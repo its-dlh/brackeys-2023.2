@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 60, 242 )
+
+[node name="JetStream" type="Node2D"]
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+position = Vector2( -1, 1 )
+amount = 32
+lifetime = 1.84
+preprocess = 2.0
+randomness = 0.25
+lifetime_randomness = 0.13
+fract_delta = false
+emission_shape = 1
+emission_sphere_radius = 42.72
+direction = Vector2( 0, -1 )
+spread = 15.28
+gravity = Vector2( 0, -98 )
+initial_velocity = 155.96
+scale_amount = 4.0
+
+[node name="Area2D" type="Area2D" parent="."]
+space_override = 1
+gravity_vec = Vector2( 0, -1 )
+gravity = 200.0
+linear_damp = 0.0
+angular_damp = 0.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 0, -188 )
+shape = SubResource( 1 )
