@@ -115,12 +115,12 @@ scale = Vector2( 1, 1 )
 gravity_vec = Vector2( -0.5, -0.5 )
 
 [node name="TripletsStream1" parent="JetStreams" instance=ExtResource( 4 )]
-position = Vector2( 1157, 1751 )
+position = Vector2( 1151, 1828 )
 rotation = -0.00360572
 scale = Vector2( 1, 1 )
 
 [node name="TripletsStream2" parent="JetStreams" instance=ExtResource( 4 )]
-position = Vector2( 1503, 1758 )
+position = Vector2( 1502, 1829 )
 rotation = -0.00360572
 scale = Vector2( 1, 1 )
 
