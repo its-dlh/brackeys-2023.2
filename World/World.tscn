@@ -21,6 +21,7 @@ smoothing_enabled = true
 
 [node name="Area2D" type="Area2D" parent="."]
 position = Vector2( 0, 128 )
+z_index = 5
 space_override = 1
 gravity_vec = Vector2( -0.01, -1 )
 gravity = 284.676
@@ -62,6 +63,7 @@ color = Color( 1, 0, 0, 1 )
 
 [node name="TileMap" type="TileMap" parent="."]
 scale = Vector2( 2, 2 )
+z_index = 10
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 16, 16 )
 collision_layer = 3
