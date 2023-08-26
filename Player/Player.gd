@@ -23,23 +23,23 @@ var hook_state = HookStates.NONE
 func _physics_process(delta):
 	look_follow(global_position, get_global_mouse_position())
 
-	# if Input.is_action_pressed("left_click"): 
-	#	print ("DOWN")
-	# else: 
-	#	print ("UP")
-
-	match player_state:
-		PlayerStates.DEFAULT:
-			pass
-		PlayerStates.HOOKED:
-			var collision = get_colliding_bodies()
-			if not collision.empty():
-				player_state = PlayerStates.DEFAULT
-				hide_hook()
-			elif global_position.distance_to(hook.global_position) <= PLAYER_HOOK_SPEED * delta:
+	if Input.is_action_pressed("left_click"): 
+		if player_state == PlayerStates.HOOKED:
+			var direction = global_position.direction_to(hook.global_position)
+			apply_impulse(Vector2.ZERO, global_position.direction_to(hook.global_position) * PLAYER_HOOK_SPEED * delta)
+			if global_position.distance_to(hook.global_position) <= PLAYER_HOOK_SPEED * delta:
 				global_position = hook.global_position
 				player_state = PlayerStates.DEFAULT
 				hide_hook()
+		else:
+			if hook_state == HookStates.RETRACT_TO_PLAYER:
+				var direction = hook.global_position.direction_to(anchor_point.global_position)
+				hook.move_and_collide(direction * HOOK_SPEED * delta)
+				if hook.global_position.distance_to(anchor_point.global_position) <= 1:
+					hook_state = HookStates.NONE
+					player_state = PlayerStates.DEFAULT
+					hide_hook()
+
 	match hook_state:
 		HookStates.EXTEND:
 			var collision_info = hook.move_and_collide(hook_direction * HOOK_SPEED * delta)
@@ -48,29 +48,19 @@ func _physics_process(delta):
 			if hook.global_position.distance_to(global_position) >= HOOK_MAX_LENGTH:
 				hook_state = HookStates.RETRACT_TO_PLAYER
 				hook_shape.call_deferred("set_disabled", true)
-		HookStates.RETRACT_TO_PLAYER:
-			var direction = hook.global_position.direction_to(anchor_point.global_position)
-			hook.move_and_collide(direction * HOOK_SPEED * delta)
-			if hook.global_position.distance_to(anchor_point.global_position) <= 1:
-				hook_state = HookStates.NONE
-				player_state = PlayerStates.DEFAULT
-				hide_hook()
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
-		match hook_state:
-			HookStates.NONE:
-				hook.global_position = anchor_point.global_position # center it
-				hook_state = HookStates.EXTEND
-				hook_direction = Vector2(throw_speed, 0).rotated(rotation)
-				hook.show()
-				hook_shape.disabled = false
-			HookStates.EXTEND:
-				hook_state = HookStates.RETRACT_TO_PLAYER
+		if hook_state == HookStates.NONE:
+			hook.global_position = anchor_point.global_position # center it
+			hook_state = HookStates.EXTEND
+			hook_direction = Vector2(throw_speed, 0).rotated(rotation)
+			hook.show()
+			hook_shape.disabled = false
 
 func hook_collide():
 	player_state = PlayerStates.HOOKED
-	apply_impulse(Vector2.ZERO, global_position.direction_to(hook.global_position) * PLAYER_HOOK_SPEED)
+	# apply_impulse(Vector2.ZERO, global_position.direction_to(hook.global_position) * PLAYER_HOOK_SPEED)
 	hook_state = HookStates.NONE
 	hook_shape.call_deferred("set_disabled", true)
 
