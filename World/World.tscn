@@ -21,6 +21,7 @@ extents = Vector2( 792.5, 162 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 416, 70 )
+contacts_reported = 1
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 limit_top = -20

@@ -8,8 +8,9 @@ export var target_movement_time = 0.2
 export var target_accel_time = 0.1
 export var max_torque: float = 1000
 
-onready var hook = $Anchor
-onready var hook_shape := $Anchor/CollisionShape2D
+onready var anchor_point = $Position2D
+onready var hook = $Position2D/Anchor
+onready var hook_shape := $Position2D/Anchor/CollisionShape2D
 
 const HOOK_MAX_LENGTH = 250.0
 const HOOK_SPEED = 800.0
@@ -21,10 +22,15 @@ var hook_state = HookStates.NONE
 
 func _physics_process(delta):
 	look_follow(global_position, get_global_mouse_position())
-	
+
+	# if Input.is_action_pressed("left_click"): 
+	#	print ("DOWN")
+	# else: 
+	#	print ("UP")
+
 	match player_state:
 		PlayerStates.DEFAULT:
-			hook.show()
+			pass
 		PlayerStates.HOOKED:
 			var collision = get_colliding_bodies()
 			if not collision.empty():
@@ -43,20 +49,24 @@ func _physics_process(delta):
 				hook_state = HookStates.RETRACT_TO_PLAYER
 				hook_shape.call_deferred("set_disabled", true)
 		HookStates.RETRACT_TO_PLAYER:
-			var direction = hook.global_position.direction_to(global_position + Vector2(20, 20))
-			var collision_info = hook.move_and_collide(direction * HOOK_SPEED * delta)
-			if collision_info:
+			var direction = hook.global_position.direction_to(anchor_point.global_position)
+			hook.move_and_collide(direction * HOOK_SPEED * delta)
+			if hook.global_position.distance_to(anchor_point.global_position) <= 1:
 				hook_state = HookStates.NONE
+				player_state = PlayerStates.DEFAULT
 				hide_hook()
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
-		if hook_state == HookStates.NONE:
-			hook.global_position = global_position + Vector2(20, 20) # center it
-			hook_state = HookStates.EXTEND
-			hook_direction = Vector2(throw_speed, 0).rotated(rotation)
-			hook.show()
-			hook_shape.disabled = false
+		match hook_state:
+			HookStates.NONE:
+				hook.global_position = anchor_point.global_position # center it
+				hook_state = HookStates.EXTEND
+				hook_direction = Vector2(throw_speed, 0).rotated(rotation)
+				hook.show()
+				hook_shape.disabled = false
+			HookStates.EXTEND:
+				hook_state = HookStates.RETRACT_TO_PLAYER
 
 func hook_collide():
 	player_state = PlayerStates.HOOKED
