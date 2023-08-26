@@ -9,7 +9,7 @@ radius = 24.0
 [sub_resource type="RectangleShape2D" id=2]
 
 [node name="Player" type="RigidBody2D"]
-contacts_reported = 2
+contacts_reported = 1
 contact_monitor = true
 angular_damp = 10.5
 script = ExtResource( 1 )
