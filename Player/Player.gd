@@ -12,6 +12,9 @@ onready var anchor_point = $Position2D
 onready var hook = $Position2D/Anchor
 onready var hook_shape := $Position2D/Anchor/CollisionShape2D
 
+onready var splash_down_audio = $SplashDownAudio
+onready var splash_up_audio = $SplashUpAudio
+
 const HOOK_MAX_LENGTH = 250.0
 const HOOK_SPEED = 800.0
 const PLAYER_HOOK_SPEED = 600.0
@@ -112,3 +115,12 @@ func attempt_angular_velocity(target_velocity: float):
 func hide_hook():
 	hook.hide()
 	hook_shape.call_deferred("set_disabled", true)
+
+func _on_Water_body_entered(body):
+	print('splash down')
+	splash_down_audio.play(0)
+
+
+func _on_Water_body_exited(body):
+	print('splash up')
+	splash_up_audio.play(0)
