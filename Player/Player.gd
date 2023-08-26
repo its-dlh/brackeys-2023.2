@@ -118,9 +118,13 @@ func hide_hook():
 
 func _on_Water_body_entered(body):
 	print('splash down')
-	splash_down_audio.play(0)
+	print(linear_velocity)
+	if linear_velocity.y > 80:
+		splash_down_audio.play()
 
 
 func _on_Water_body_exited(body):
 	print('splash up')
-	splash_up_audio.play(0)
+	print(linear_velocity)
+	if linear_velocity.y < -90:
+		splash_up_audio.play()
