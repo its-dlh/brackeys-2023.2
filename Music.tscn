@@ -3,6 +3,7 @@
 [ext_resource path="res://audio/Brackeys2023.2-music.ogg" type="AudioStream" id=1]
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer"]
+pause_mode = 2
 stream = ExtResource( 1 )
 volume_db = -5.681
 autoplay = true

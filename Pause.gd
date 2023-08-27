@@ -18,7 +18,8 @@ func _on_Unpause_pressed():
 
 
 func _on_Quit_pressed():
-	get_tree().quit()
+	get_tree().paused = false
+	get_tree().reload_current_scene()
 
 func _input(event):
 	if event is InputEventKey and event.pressed and event.scancode == KEY_ESCAPE:

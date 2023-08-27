@@ -59,7 +59,7 @@ margin_top = 120.0
 margin_right = 287.0
 margin_bottom = 170.0
 size_flags_vertical = 3
-text = "I would prefer to stop playing entirely"
+text = "I would prefer to start over"
 
 [connection signal="pressed" from="PopupPanel/VBoxContainer/Unpause" to="." method="_on_Unpause_pressed"]
 [connection signal="pressed" from="PopupPanel/VBoxContainer/Quit" to="." method="_on_Quit_pressed"]
