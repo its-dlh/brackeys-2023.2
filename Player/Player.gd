@@ -10,7 +10,7 @@ export var max_torque: float = 1000
 
 onready var anchor_point = $Position2D
 onready var hook = $Position2D/Anchor
-onready var hook_shape := $Position2D/Anchor/CollisionShape2D
+onready var hook_shape = $Position2D/Anchor/CollisionShape2D
 
 const HOOK_MAX_LENGTH = 250.0
 const HOOK_SPEED = 800.0
@@ -24,14 +24,13 @@ var hook_state = HookStates.NONE
 func _physics_process(delta):
 	look_follow(global_position, get_global_mouse_position())
 
-	if Input.is_action_pressed("left_click"): 
+	if Input.is_action_pressed("left_click"):
 		if player_state == PlayerStates.HOOKED:
 			var direction = global_position.direction_to(hook.global_position)
 			apply_impulse(Vector2.ZERO, global_position.direction_to(hook.global_position) * PLAYER_HOOK_SPEED * delta)
 			if global_position.distance_to(hook.global_position) <= PLAYER_HOOK_SPEED * delta:
 				global_position = hook.global_position
 				player_state = PlayerStates.DEFAULT
-				hide_hook()
 		else:
 			if hook_state == HookStates.RETRACT_TO_PLAYER or hook_state == HookStates.HOOKED:
 				var direction = hook.global_position.direction_to(anchor_point.global_position)
@@ -40,7 +39,7 @@ func _physics_process(delta):
 				# can knock around the Sub and cause a fun (but BAD) launch effect,
 				# so instead we just process the distance and give ourselves a little
 				# wiggle room with the constant
-				if hook.global_position.distance_to(anchor_point.global_position) <= 1:
+				if hook.global_position.distance_to(anchor_point.global_position) <= 5:
 					hook_return()
 
 	match hook_state:
@@ -48,6 +47,7 @@ func _physics_process(delta):
 			if hook.global_position.distance_to(anchor_point.global_position) >= HOOK_MAX_LENGTH:
 				# Too far!
 				hook_state = HookStates.RETRACT_TO_PLAYER
+				hook_shape.disabled = false
 			else:
 				var collision_info = hook.move_and_collide(hook_direction * HOOK_SPEED * delta)
 				if collision_info:
@@ -56,21 +56,30 @@ func _physics_process(delta):
 			hook.global_position = anchor_sticky_position
 
 func _input(event):
-	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
-		if hook_state == HookStates.NONE:
-			hook_launch()
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == BUTTON_LEFT:
+			if hook_state == HookStates.NONE:
+				hook_launch()
+		elif event.button_index == BUTTON_RIGHT:
+			hook_detach()
+
+func hook_detach():
+	print('hook_state: RETRACT_TO_PLAYER')
+	hook_state = HookStates.RETRACT_TO_PLAYER
+	player_state = PlayerStates.DEFAULT
 
 # When the user initially clicks the hook is launched
 # Requires checking hook status before firing
 func hook_launch():
+	print('hook_state: EXTEND')
 	hook.global_position = anchor_point.global_position # center it
 	hook_state = HookStates.EXTEND
 	hook_direction = Vector2(throw_speed, 0).rotated(rotation)
-	hook.show()
 	hook_shape.disabled = false
 
 # When the hook hits a target 
 func hooked():
+	print('hook_state: HOOKED')
 	# We pause the movement of the anchor by collecting it's
 	# position when it hits. In our physics processing, we reset
 	# its position to the saved position
@@ -86,11 +95,10 @@ func hooked():
 
 # Hook returns to ship
 func hook_return():
-	print("hook return to ship")
+	print('hook_state: NONE')
 	hook_state = HookStates.NONE
 	player_state = PlayerStates.DEFAULT
 	hook_shape.call_deferred("set_disabled", true)
-	
 
 func look_follow(current_position, target_position):
 	var target_angle = atan2(target_position.y - current_position.y, target_position.x - current_position.x)
@@ -108,7 +116,3 @@ func attempt_angular_velocity(target_velocity: float):
 	var target_acceleration = (target_velocity - angular_velocity) / target_accel_time
 	var target_torque = inertia * target_acceleration
 	add_torque(clamp(target_torque, -max_torque, max_torque))
-
-func hide_hook():
-	hook.hide()
-	hook_shape.call_deferred("set_disabled", true)
