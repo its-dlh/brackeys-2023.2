@@ -124,7 +124,7 @@ rect_scale = Vector2( 3.60705, 4.40326 )
 text = "You did it!"
 
 [node name="ShittyPlayer" parent="." instance=ExtResource( 1 )]
-position = Vector2( 1304, 1448 )
+position = Vector2( 464, -91 )
 max_throw_distance = 220
 
 [node name="Camera2D" type="Camera2D" parent="ShittyPlayer"]
