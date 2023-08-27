@@ -1,58 +1,137 @@
-extends Node2D
+extends RigidBody2D
 
-export var max_throw_distance = 300
-export var throw_speed = 400
-export var anchor_slack = 10
+enum PlayerStates {DEFAULT, HOOKED}
+enum HookStates {NONE, EXTEND, HOOKED, RETRACT_TO_PLAYER}
 
-onready var rigid_body = $RigidBody
-onready var anchor = $Anchor
+export var throw_speed = 0.5
+export var target_movement_time = 0.2
+export var target_accel_time = 0.1
+export var max_torque: float = 1000
 
-var hook_state = HookStates.idle
-var is_pinned = false
-var anchor_pin: PinJoint2D = null
+onready var anchor_point = $Position2D
+onready var hook = $Position2D/Anchor
+onready var hook_shape = $Position2D/Anchor/CollisionShape2D
 
-enum HookStates {
-	idle,
-	extended,
-	stuck
-}
+onready var splash_down_audio = $SplashDownAudio
+onready var splash_up_audio = $SplashUpAudio
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass
+const HOOK_MAX_LENGTH = 300.0
+const HOOK_SPEED = 850.0
+const PLAYER_HOOK_SPEED = 750.0
+
+var anchor_sticky_position: Vector2
+var hook_direction: Vector2
+var player_state = PlayerStates.DEFAULT
+var hook_state = HookStates.NONE
 
 func _physics_process(delta):
-	if anchor.position.distance_to(rigid_body.position) > max_throw_distance and hook_state != HookStates.stuck and not is_pinned:
-		is_pinned = true
-		anchor_pin = PinJoint2D.new()
-		anchor_pin.position = rigid_body.position
-		anchor_pin.node_a = rigid_body.get_path()
-		anchor_pin.node_b = anchor.get_path()
+	look_follow(global_position, get_global_mouse_position())
 
-		add_child(anchor_pin)
+	if Input.is_action_pressed("left_click"):
+		if player_state == PlayerStates.HOOKED:
+			var direction = global_position.direction_to(hook.global_position)
+			apply_impulse(Vector2.ZERO, global_position.direction_to(hook.global_position) * PLAYER_HOOK_SPEED * delta)
+			if global_position.distance_to(hook.global_position) <= PLAYER_HOOK_SPEED * delta:
+				global_position = hook.global_position
+				player_state = PlayerStates.DEFAULT
+		else:
+			if hook_state == HookStates.RETRACT_TO_PLAYER or hook_state == HookStates.HOOKED:
+				var direction = hook.global_position.direction_to(anchor_point.global_position)
+				var collision_info = hook.move_and_collide(direction * HOOK_SPEED * delta)
+				print(hook.global_position.distance_to(anchor_point.global_position))
+				# We don't like the collision event as it returns (since the anchor
+				# can knock around the Sub and cause a fun (but BAD) launch effect,
+				# so instead we just process the distance and give ourselves a little
+				# wiggle room with the constant
+				if hook.global_position.distance_to(anchor_point.global_position) <= 6 or hook.global_position.distance_to(global_position) <= 6:
+					hook_return()
+
+	match hook_state:
+		HookStates.EXTEND:
+			if hook.global_position.distance_to(anchor_point.global_position) >= HOOK_MAX_LENGTH:
+				# Too far!
+				hook_state = HookStates.RETRACT_TO_PLAYER
+				hook_shape.disabled = false
+			else:
+				var collision_info = hook.move_and_collide(hook_direction * HOOK_SPEED * delta)
+				if collision_info:
+					hooked()
+		HookStates.HOOKED:
+			hook.global_position = anchor_sticky_position
 
 func _input(event):
-	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.pressed:
-		if hook_state == HookStates.idle:
-			hook_state = HookStates.extended
-			var impulse_vector = Vector2(throw_speed, 0).rotated(rigid_body.rotation)
-			anchor.apply_impulse(Vector2(), impulse_vector)
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == BUTTON_LEFT:
+			if hook_state == HookStates.NONE:
+				hook_launch()
+		elif event.button_index == BUTTON_RIGHT:
+			if hook_state == HookStates.HOOKED:
+				hook_detach()
+				apply_impulse(Vector2.ZERO, Vector2(PLAYER_HOOK_SPEED, 0).rotated(rotation))
+
+func hook_detach():
+	print('hook_state: RETRACT_TO_PLAYER')
+	hook_state = HookStates.RETRACT_TO_PLAYER
+	player_state = PlayerStates.DEFAULT
+
+# When the user initially clicks the hook is launched
+# Requires checking hook status before firing
+func hook_launch():
+	print('hook_state: EXTEND')
+	hook.global_position = anchor_point.global_position # center it
+	hook_state = HookStates.EXTEND
+	hook_direction = Vector2(throw_speed, 0).rotated(rotation)
+	hook_shape.disabled = false
+
+# When the hook hits a target
+func hooked():
+	print('hook_state: HOOKED')
+	# We pause the movement of the anchor by collecting it's
+	# position when it hits. In our physics processing, we reset
+	# its position to the saved position
+
+	# This is better than doing any kind of pause/disable since
+	# we still want the anchor to process events
+	anchor_sticky_position = hook.global_position
+	player_state = PlayerStates.HOOKED
+	hook_state = HookStates.HOOKED
+
+	# We do want to keep from registering a second collision, however
+	hook_shape.call_deferred("set_disabled", true)
+
+# Hook returns to ship
+func hook_return():
+	print('hook_state: NONE')
+	hook_state = HookStates.NONE
+	player_state = PlayerStates.DEFAULT
+	hook_shape.call_deferred("set_disabled", true)
+
+func look_follow(current_position, target_position):
+	var target_angle = atan2(target_position.y - current_position.y, target_position.x - current_position.x)
+	var current_angle = rotation
+	var difference = target_angle - current_angle
+
+	if difference > PI:
+		difference -= PI * 2
+	elif difference < -PI:
+		difference += PI * 2
+
+	attempt_angular_velocity(difference / target_movement_time)
+
+func attempt_angular_velocity(target_velocity: float):
+	var target_acceleration = (target_velocity - angular_velocity) / target_accel_time
+	var target_torque = inertia * target_acceleration
+	add_torque(clamp(target_torque, -max_torque, max_torque))
+
+func _on_Water_body_entered(_body):
+	if linear_velocity.y > 30:
+		var vol_offset = clamp(120 - linear_velocity.y, 0, 100) / 100
+		splash_down_audio.volume_db = vol_offset * -20
+		splash_down_audio.play()
 
 
-func _on_Anchor_body_entered(body):
-	if (hook_state == HookStates.extended):
-		hook_state = HookStates.stuck
-		anchor.sleeping = true
-		var chain = DampedSpringJoint2D.new()
-		chain.stiffness = 0
-		chain.damping = 0
-		chain.position = rigid_body.position
-		chain.rest_length = rigid_body.position.distance_to(body.position)
-		chain.length = chain.rest_length + anchor_slack
-		chain.rotation = rad2deg(rigid_body.position.angle_to(body.position))
-		chain.node_a = rigid_body.get_path()
-		chain.node_b = body.get_path()
-
-		add_child(chain)
-
-
+func _on_Water_body_exited(_body):
+	if linear_velocity.y < -30:
+		var vol_offset = clamp(-120 - linear_velocity.y, -100, 0) / 100
+		splash_up_audio.volume_db = vol_offset * 20
+		splash_up_audio.play()
