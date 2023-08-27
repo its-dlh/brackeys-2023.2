@@ -123,16 +123,14 @@ margin_bottom = 4973.0
 rect_scale = Vector2( 3.60705, 4.40326 )
 text = "You did it!"
 
-[node name="CollideAudio" type="AudioStreamPlayer" parent="."]
-stream = SubResource( 5 )
-
 [node name="ShittyPlayer" parent="." instance=ExtResource( 1 )]
 position = Vector2( 1304, 1448 )
 max_throw_distance = 220
 
 [node name="Camera2D" type="Camera2D" parent="ShittyPlayer"]
-position = Vector2( 5.99988, 0.0166016 )
-rotation = 0.00278054
-current = true
-limit_top = -20
-smoothing_enabled = true
+
+[node name="CollideAudio" type="AudioStreamPlayer" parent="."]
+stream = SubResource( 5 )
+
+[connection signal="body_entered" from="Water" to="ShittyPlayer" method="_on_Water_body_entered"]
+[connection signal="body_exited" from="Water" to="ShittyPlayer" method="_on_Water_body_exited"]

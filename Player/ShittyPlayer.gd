@@ -7,6 +7,8 @@ export var max_throw_distance = 150
 onready var rigid_body = $RigidBody
 onready var anchor_line = $AnchorLine
 onready var pin_anchor = StaticBody2D.new()
+onready var splash_down_audio = $SplashDownAudio
+onready var splash_up_audio = $SplashUpAudio
 
 var hook_state = HookStates.idle
 var is_pinned = false
@@ -17,10 +19,6 @@ enum HookStates {
 	extended,
 	stuck
 }
-
-# Called when the node enters the scene tree for the first time.
-# func _ready():
-# 	pass
 
 func _physics_process(_delta):
 	if hook_state == HookStates.extended:
@@ -71,21 +69,14 @@ func _input(event):
 			print("idle")
 			anchor_line.visible = false
 
+func _on_Water_body_entered(_body):
+	if rigid_body.linear_velocity.y > 30:
+		var vol_offset = clamp(120 - rigid_body.linear_velocity.y, 0, 100) / 100
+		splash_down_audio.volume_db = vol_offset * -20
+		splash_down_audio.play()
 
-# func _on_Anchor_body_entered(body):
-# 	if (hook_state == HookStates.extended):
-# 		hook_state = HookStates.stuck
-# 		anchor.sleeping = true
-# 		var chain = DampedSpringJoint2D.new()
-# 		chain.stiffness = 0
-# 		chain.damping = 0
-# 		chain.position = rigid_body.position
-# 		chain.rest_length = rigid_body.position.distance_to(body.position)
-# 		chain.length = chain.rest_length + anchor_slack
-# 		chain.rotation = rad2deg(rigid_body.position.angle_to(body.position))
-# 		chain.node_a = rigid_body.get_path()
-# 		chain.node_b = body.get_path()
-
-# 		add_child(chain)
-
-
+func _on_Water_body_exited(_body):
+	if rigid_body.linear_velocity.y < -30:
+		var vol_offset = clamp(-120 - rigid_body.linear_velocity.y, -100, 0) / 100
+		splash_up_audio.volume_db = vol_offset * 20
+		splash_up_audio.play()

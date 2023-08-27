@@ -48,7 +48,6 @@ smoothing_enabled = true
 smoothing_speed = 1.0
 
 [node name="AnchorLine" type="Line2D" parent="."]
-visible = false
 show_behind_parent = true
 z_index = -1
 width = 4.0
