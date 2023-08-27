@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://World/cavern-terrain-tileset.tres" type="TileSet" id=2]
 [ext_resource path="res://Player/ShittyPlayer.tscn" type="PackedScene" id=3]
 [ext_resource path="res://World/JetStream.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Pause.tscn" type="PackedScene" id=5]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 100000, 100000 )
@@ -109,24 +110,22 @@ shape = SubResource( 4 )
 [node name="IntroStream" parent="JetStreams" instance=ExtResource( 4 )]
 position = Vector2( 961, 1347 )
 rotation = -0.632212
-scale = Vector2( 1, 1 )
 gravity_vec = Vector2( -0.5, -0.5 )
 
 [node name="TripletsStream1" parent="JetStreams" instance=ExtResource( 4 )]
 position = Vector2( 1151, 1828 )
 rotation = -0.00360572
-scale = Vector2( 1, 1 )
 
 [node name="TripletsStream2" parent="JetStreams" instance=ExtResource( 4 )]
 position = Vector2( 1502, 1829 )
 rotation = -0.00360572
-scale = Vector2( 1, 1 )
 
 [node name="CrescentTop" parent="JetStreams" instance=ExtResource( 4 )]
 position = Vector2( 2261, 1095 )
 rotation = -1.50265
-scale = Vector2( 1, 1 )
 gravity_vec = Vector2( -1, 0 )
 
 [node name="SquareStream" parent="JetStreams" instance=ExtResource( 4 )]
 position = Vector2( 3332, 3933 )
+
+[node name="Pause" parent="." instance=ExtResource( 5 )]
