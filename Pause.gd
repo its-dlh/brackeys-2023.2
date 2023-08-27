@@ -22,5 +22,9 @@ func _on_Quit_pressed():
 
 func _input(event):
 	if event is InputEventKey and event.pressed and event.scancode == KEY_ESCAPE:
-		panel.show()
-		get_tree().paused = true
+		if panel.visible:
+			panel.hide()
+			get_tree().paused = false
+		else:
+			panel.show()
+			get_tree().paused = true
