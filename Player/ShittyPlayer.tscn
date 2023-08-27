@@ -1,12 +1,17 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Player/ShittyPlayer.gd" type="Script" id=1]
 [ext_resource path="res://Player/RigidBody.gd" type="Script" id=2]
 [ext_resource path="res://Player/Player.png" type="Texture" id=3]
 [ext_resource path="res://audio/splash-up-001.wav" type="AudioStream" id=4]
+[ext_resource path="res://audio/splash-down-002.wav" type="AudioStream" id=5]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 24.0
+
+[sub_resource type="AudioStreamRandomPitch" id=3]
+audio_stream = ExtResource( 5 )
+random_pitch = 1.2
 
 [sub_resource type="AudioStreamRandomPitch" id=2]
 audio_stream = ExtResource( 4 )
@@ -53,6 +58,7 @@ begin_cap_mode = 2
 end_cap_mode = 2
 
 [node name="SplashDownAudio" type="AudioStreamPlayer" parent="."]
+stream = SubResource( 3 )
 pitch_scale = 0.72
 
 [node name="SplashUpAudio" type="AudioStreamPlayer" parent="."]
