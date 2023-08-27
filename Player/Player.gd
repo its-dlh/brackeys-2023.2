@@ -15,9 +15,9 @@ onready var hook_shape = $Position2D/Anchor/CollisionShape2D
 onready var splash_down_audio = $SplashDownAudio
 onready var splash_up_audio = $SplashUpAudio
 
-const HOOK_MAX_LENGTH = 250.0
-const HOOK_SPEED = 800.0
-const PLAYER_HOOK_SPEED = 600.0
+const HOOK_MAX_LENGTH = 300.0
+const HOOK_SPEED = 850.0
+const PLAYER_HOOK_SPEED = 750.0
 
 var anchor_sticky_position: Vector2
 var hook_direction: Vector2
@@ -37,12 +37,13 @@ func _physics_process(delta):
 		else:
 			if hook_state == HookStates.RETRACT_TO_PLAYER or hook_state == HookStates.HOOKED:
 				var direction = hook.global_position.direction_to(anchor_point.global_position)
-				hook.move_and_collide(direction * HOOK_SPEED * delta)
+				var collision_info = hook.move_and_collide(direction * HOOK_SPEED * delta)
+				print(hook.global_position.distance_to(anchor_point.global_position))
 				# We don't like the collision event as it returns (since the anchor
 				# can knock around the Sub and cause a fun (but BAD) launch effect,
 				# so instead we just process the distance and give ourselves a little
 				# wiggle room with the constant
-				if hook.global_position.distance_to(anchor_point.global_position) <= 5:
+				if hook.global_position.distance_to(anchor_point.global_position) <= 6 or hook.global_position.distance_to(global_position) <= 6:
 					hook_return()
 
 	match hook_state:
@@ -64,7 +65,9 @@ func _input(event):
 			if hook_state == HookStates.NONE:
 				hook_launch()
 		elif event.button_index == BUTTON_RIGHT:
-			hook_detach()
+			if hook_state == HookStates.HOOKED:
+				hook_detach()
+				apply_impulse(Vector2.ZERO, Vector2(PLAYER_HOOK_SPEED, 0).rotated(rotation))
 
 func hook_detach():
 	print('hook_state: RETRACT_TO_PLAYER')
@@ -119,10 +122,6 @@ func attempt_angular_velocity(target_velocity: float):
 	var target_acceleration = (target_velocity - angular_velocity) / target_accel_time
 	var target_torque = inertia * target_acceleration
 	add_torque(clamp(target_torque, -max_torque, max_torque))
-
-func hide_hook():
-	hook.hide()
-	hook_shape.call_deferred("set_disabled", true)
 
 func _on_Water_body_entered(_body):
 	if linear_velocity.y > 30:
