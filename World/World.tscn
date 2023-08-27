@@ -125,7 +125,7 @@ text = "You did it!"
 
 [node name="ShittyPlayer" parent="." instance=ExtResource( 1 )]
 position = Vector2( 464, -91 )
-max_throw_distance = 220
+max_throw_distance = 200
 
 [node name="Camera2D" type="Camera2D" parent="ShittyPlayer"]
 
