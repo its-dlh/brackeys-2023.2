@@ -38,7 +38,6 @@ func _physics_process(delta):
 			if hook_state == HookStates.RETRACT_TO_PLAYER or hook_state == HookStates.HOOKED:
 				var direction = hook.global_position.direction_to(anchor_point.global_position)
 				var collision_info = hook.move_and_collide(direction * HOOK_SPEED * delta)
-				print(hook.global_position.distance_to(anchor_point.global_position))
 				# We don't like the collision event as it returns (since the anchor
 				# can knock around the Sub and cause a fun (but BAD) launch effect,
 				# so instead we just process the distance and give ourselves a little

@@ -1,11 +1,15 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Player/ShittyPlayer.gd" type="Script" id=1]
 [ext_resource path="res://Player/RigidBody.gd" type="Script" id=2]
 [ext_resource path="res://Player/Player.png" type="Texture" id=3]
+[ext_resource path="res://audio/splash-up-001.wav" type="AudioStream" id=4]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 24.0
+
+[sub_resource type="AudioStreamRandomPitch" id=2]
+audio_stream = ExtResource( 4 )
 
 [node name="ShittyPlayer" type="Node2D"]
 rotation = -0.00278054
@@ -47,3 +51,9 @@ default_color = Color( 0, 0, 0, 1 )
 joint_mode = 2
 begin_cap_mode = 2
 end_cap_mode = 2
+
+[node name="SplashDownAudio" type="AudioStreamPlayer" parent="."]
+pitch_scale = 0.72
+
+[node name="SplashUpAudio" type="AudioStreamPlayer" parent="."]
+stream = SubResource( 2 )
